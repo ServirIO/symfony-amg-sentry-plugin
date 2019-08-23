@@ -8,33 +8,36 @@
  *
  */
 
-// defeat the autoload race condition when __FILE__ is loaded before amgSentry.class.php
-if (!class_exists('amgSentry')) {
-    require_once 'amgSentry.class.php';
-}
+// // defeat the autoload race condition when __FILE__ is loaded before amgSentry.class.php
+// if (!class_exists('amgSentry')) {
+//     require_once 'amgSentry.class.php';
+// }
 
-class amgSentryLogger extends sfLogger {
+class amgSentryLogger extends sfLogger
+{
 
 	/**
-	* Logs a message.
-	*
-	* @param string $message   Message
-	* @param string $priority  Message priority
-	*
-	* @see sfLogger::doLog
-	*/
-	protected function doLog($message, $priority){
+	 * Logs a message.
+	 *
+	 * @param string $message   Message
+	 * @param string $priority  Message priority
+	 *
+	 * @see sfLogger::doLog
+	 */
+	protected function doLog($message, $priority)
+	{
 		amgSentry::sendMessage($message, '', $this->_getSentryLevelFromLoggerPriority($priority));
 	}
 
 	/**
-	* Map symfony logger error priority to Sentry level.
-	*
-	* @param integer $priority Logger priority
-	*
-	* @return string Sentry level
-	*/
-	protected function _getSentryLevelFromLoggerPriority($priority){
+	 * Map symfony logger error priority to Sentry level.
+	 *
+	 * @param integer $priority Logger priority
+	 *
+	 * @return string Sentry level
+	 */
+	protected function _getSentryLevelFromLoggerPriority($priority)
+	{
 		switch ($priority) {
 			case self::EMERG:
 			case self::ALERT:
@@ -53,5 +56,4 @@ class amgSentryLogger extends sfLogger {
 
 		throw new Exception(sprintf('Unknown priority "%s" in Sentry.', $priority));
 	}
-
 }

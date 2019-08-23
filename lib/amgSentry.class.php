@@ -13,40 +13,44 @@ class amgSentry extends Raven_Client
     protected static $_logger = null;
 
     /**
-    * Retrieves the singleton instance of this class.
-    *
-    * @return amgSentry A amgSentry implementation instance.
-    */
+     * Retrieves the singleton instance of this class.
+     *
+     * @return amgSentry A amgSentry implementation instance.
+     */
     public static function getInstance()
     {
         if (!isset(self::$_instance)) {
+            // die('h1');
             if (!sfConfig::get('app_amg_sentry_dsn')) {
                 throw new Exception('Please configure amgSentryPlugin in your app.yml (use model in "amgSentryPlugin/config/app.yml")');
             }
 
-            $environment = sfProjectConfiguration::getActive()->isProduction() ? 'production' : 'development';
+            // El metodo isProduction no exite, talvez existe en alguna actualización de symfony1?
+            // $environment = sfProjectConfiguration::getActive()->isProduction() ? 'production' : 'development';
             $params      = [
                 'release'     => sfConfig::get('app_amg_sentry_release'),
-                'environment' => $environment,
+                // 'environment' => $environment,
                 'tags'        => [
                     'instance' => INSTANCE_BASE_URL
                 ],
             ];
 
             self::$_instance = new amgSentry(sfConfig::get('app_amg_sentry_dsn'), $params);
+            // die('h3');
         }
+        // die('h');
         return self::$_instance;
     }
 
     /**
-    * Send a message to Sentry.
-    *
-    * @param string $title Message title
-    * @param string $additional_comments Message additional_comments
-    * @param string $level Message level
-    *
-    * @return integer Sentry event ID
-    */
+     * Send a message to Sentry.
+     *
+     * @param string $title Message title
+     * @param string $additional_comments Message additional_comments
+     * @param string $level Message level
+     *
+     * @return integer Sentry event ID
+     */
     public static function sendMessage($title, $additional_comments = '', $level = self::INFO)
     {
         if (!sfConfig::get('app_amg_sentry_enabled', false)) {
@@ -61,13 +65,13 @@ class amgSentry extends Raven_Client
     }
 
     /**
-    * Send an exception to Sentry.
-    *
-    * @param Exception $exception Exception
-    * @param string $additional_comments Exception additional_comments
-    *
-    * @return integer Sentry event ID
-    */
+     * Send an exception to Sentry.
+     *
+     * @param Exception $exception Exception
+     * @param string $additional_comments Exception additional_comments
+     *
+     * @return integer Sentry event ID
+     */
     public static function sendException($exception, $additional_comments = '')
     {
         if (!sfConfig::get('app_amg_sentry_enabled', false)) {
@@ -78,6 +82,15 @@ class amgSentry extends Raven_Client
         if (!empty($additional_comments)) {
             $parameters['extra']['additional_comments'] = $additional_comments;
         }
+
+        $user = [];
+        if (!empty($_SESSION)) {
+            $user['data'] = $_SESSION;
+            $user['data'] = $user['data']['symfony/user/sfUser/attributes']['seguridad'];
+            $user['username'] = $user['data']['nombre'];
+        }
+        $parameters['user'] = $user;
+
         return self::getInstance()->captureException($exception, $parameters);
     }
 
@@ -115,17 +128,17 @@ class amgSentry extends Raven_Client
     }
 
     /**
-    * Set Sentry logger.
-    *
-    * @param string $logger Logger
-    */
+     * Set Sentry logger.
+     *
+     * @param string $logger Logger
+     */
     public static function setLogger($logger)
     {
         self::$_logger = $logger;
     }
     /**
-    * Reset Sentry logger.
-    */
+     * Reset Sentry logger.
+     */
     public static function resetLogger()
     {
         self::$_logger = null;
