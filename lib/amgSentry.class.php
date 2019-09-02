@@ -20,7 +20,6 @@ class amgSentry extends Raven_Client
     public static function getInstance()
     {
         if (!isset(self::$_instance)) {
-            // die('h1');
             if (!sfConfig::get('app_amg_sentry_dsn')) {
                 throw new Exception('Please configure amgSentryPlugin in your app.yml (use model in "amgSentryPlugin/config/app.yml")');
             }
@@ -29,16 +28,14 @@ class amgSentry extends Raven_Client
             // $environment = sfProjectConfiguration::getActive()->isProduction() ? 'production' : 'development';
             $params      = [
                 'release'     => sfConfig::get('app_amg_sentry_release'),
-                // 'environment' => $environment,
+                'environment' => sfConfig::get('app_amg_sentry_environment'),
                 'tags'        => [
                     'instance' => INSTANCE_BASE_URL
                 ],
             ];
 
             self::$_instance = new amgSentry(sfConfig::get('app_amg_sentry_dsn'), $params);
-            // die('h3');
         }
-        // die('h');
         return self::$_instance;
     }
 
