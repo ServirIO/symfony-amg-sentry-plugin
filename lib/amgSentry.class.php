@@ -30,7 +30,8 @@ class amgSentry extends Raven_Client
                 'release'     => sfConfig::get('app_amg_sentry_release'),
                 'environment' => sfConfig::get('app_amg_sentry_environment'),
                 'tags'        => [
-                    'instance' => INSTANCE_BASE_URL
+                    // No sabemos dónde debería definirse esta constante
+                    // 'instance' => INSTANCE_BASE_URL
                 ],
             ];
 
